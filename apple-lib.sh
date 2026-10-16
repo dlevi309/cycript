@@ -64,6 +64,10 @@ function arch() {
     if [[ ${lib} == libffi ]]; then
         opts+=(--disable-docs)
     fi
+    if [[ ${lib} == readline ]]; then
+        # readline's ancient config.sub does not recognize arm64-apple-darwin, which is what config.guess says on Apple silicon
+        opts+=(--build=x86_64-apple-darwin)
+    fi
 
     cd "${lib}.${arch}"
     CC="clang -arch ${arch}" CXX="clang++ -arch ${arch}" LDFLAGS="${flags[*]}" CPPFLAGS="${flags[*]} $*" "${src}"/configure --host="${host}" --enable-static --disable-shared "${opts[@]}" \
