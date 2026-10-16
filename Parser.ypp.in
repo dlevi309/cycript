@@ -168,32 +168,32 @@ _finline int cylex_(cy::parser::semantic_type *semantic, CYLocation *location, C
 }
 
 #define yylex_(semantic, location, driver) ({ \
-    int type; \
-    if (driver.hold_ == cy::parser::empty_symbol) \
+    cy::parser::symbol_kind_type type; \
+    if (driver.hold_ == cy::parser::symbol_kind::S_YYEMPTY) \
         type = yytranslate_(cylex_(semantic, location, driver)); \
     else { \
-        type = driver.hold_; \
-        driver.hold_ = cy::parser::empty_symbol; \
+        type = static_cast<cy::parser::symbol_kind_type>(driver.hold_); \
+        driver.hold_ = cy::parser::symbol_kind::S_YYEMPTY; \
     } \
 type; })
 
 #define CYLEX() do if (yyla.empty()) { \
     YYCDEBUG << "Mapping a token: "; \
-    yyla.type = yylex_(&yyla.value, &yyla.location, driver); \
+    yyla.kind_ = yylex_(&yyla.value, &yyla.location, driver); \
     YY_SYMBOL_PRINT("Next token is", yyla); \
 } while (false)
 
 #define CYMAP(to, from) do { \
     CYLEX(); \
-    if (yyla.type == yytranslate_(token::from)) \
-        yyla.type = yytranslate_(token::to); \
+    if (yyla.kind_ == yytranslate_(token::from)) \
+        yyla.kind_ = yytranslate_(token::to); \
 } while (false)
 
 #define CYHLD(location, token) do { \
-    if (driver.hold_ != empty_symbol) \
+    if (driver.hold_ != symbol_kind::S_YYEMPTY) \
         CYERR(location, "unexpected hold"); \
-    driver.hold_ = yyla.type; \
-    yyla.type = yytranslate_(token); \
+    driver.hold_ = yyla.kind_; \
+    yyla.kind_ = yytranslate_(token); \
 } while (false)
 
 #define CYERR(location, message) do { \
@@ -210,7 +210,7 @@ type; })
     CYERR(location, "unimplemented feature")
 
 #define CYMPT(location) do { \
-    if (!yyla.empty() && yyla.type_get() != yyeof_) \
+    if (!yyla.empty() && yyla.kind_ != symbol_kind::S_YYEOF) \
         CYERR(location, "unexpected lookahead"); \
 } while (false)
 
@@ -939,13 +939,13 @@ TerminatorSoft
 @begin C
 TerminatorHard
     : ";"
-    | error { if (yyla.type_get() != yyeof_) CYERR(@error, "required semi-colon"); else CYEOK(); } StrictSemi
+    | error { if (yyla.kind_ != symbol_kind::S_YYEOF) CYERR(@error, "required semi-colon"); else CYEOK(); } StrictSemi
     ;
 @end
 
 Terminator
     : ";"
-    | error { if (yyla.type_get() != yyeof_ && yyla.type != yytranslate_(token::CloseBrace) && !driver.newline_) CYERR(@error, "required semi-colon"); else CYEOK(); } StrictSemi
+    | error { if (yyla.kind_ != symbol_kind::S_YYEOF && yyla.kind_ != yytranslate_(token::CloseBrace) && !driver.newline_) CYERR(@error, "required semi-colon"); else CYEOK(); } StrictSemi
     ;
 
 TerminatorOpt

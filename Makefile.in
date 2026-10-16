@@ -621,7 +621,7 @@ ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -DYYDEBUG=1 -DCY_SYSTEM="\"$(CY_SYSTEM)\"" -include \
 	config.h -include $(srcdir)/unconfig.h $(am__append_9) \
 	$(am__append_24)
-CY_FLAGS = -fvisibility=hidden $(am__append_1)
+CY_FLAGS = -fvisibility=hidden -fno-delete-null-pointer-checks $(am__append_1)
 AM_CFLAGS = $(CY_FLAGS)
 AM_CXXFLAGS = $(CY_FLAGS)
 AM_OBJCXXFLAGS = $(CY_FLAGS) -fobjc-exceptions
@@ -1511,7 +1511,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-datDATA \
 @CY_EXECUTE_TRUE@libcycript.db: Bridge.def libcycript.py
 @CY_EXECUTE_TRUE@	$(srcdir)/libcycript.py $(CY_SYSTEM) $@ $(srcdir) <$<
 @CY_EXECUTE_TRUE@@CY_PRELINK_TRUE@Analyze: Analyze.cpp Error.cpp Output.cpp Replace.cpp Syntax.cpp
-@CY_EXECUTE_TRUE@@CY_PRELINK_TRUE@	$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) -std=c++11 $(LDFLAGS_FOR_BUILD) $(CY_LANGFLAGS) -I$(srcdir)/extra -o $@ $^ $(CY_LIBCLANG) -Wno-bitwise-op-parentheses -Wno-dangling-else -Wno-logical-op-parentheses
+@CY_EXECUTE_TRUE@@CY_PRELINK_TRUE@	$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) -std=c++11 -fno-delete-null-pointer-checks $(LDFLAGS_FOR_BUILD) $(CY_LANGFLAGS) -I$(srcdir)/extra -o $@ $^ $(CY_LIBCLANG) -Wno-bitwise-op-parentheses -Wno-dangling-else -Wno-logical-op-parentheses
 @CY_EXECUTE_TRUE@@CY_PRELINK_TRUE@Bridge.def: Analysis.cpp Analyze Bridge.old
 @CY_EXECUTE_TRUE@@CY_PRELINK_TRUE@	./Analyze $< $(OBJCXX) $(CPPFLAGS) $(AM_OBJCXXFLAGS) $(OBJCXXFLAGS) $(CY_LANGFLAGS) $(CY_ANDFLAGS) >$@
 @CY_EXECUTE_TRUE@@CY_PRELINK_TRUE@	cat $(srcdir)/Bridge.old >>$@

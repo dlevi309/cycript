@@ -22,19 +22,13 @@
 set -e
 
 rm -rf sysroot.ios
-mkdir -p sysroot.ios
+mkdir -p sysroot.ios/usr/include
 
-for deb in libffi_3.3 ncurses_6.2 readline_8.0.4; do
-    deb=${deb}_iphoneos-arm.deb
-    [[ -f "${deb}" ]] || wget https://apt.procurs.us/pool/main/iphoneos-arm64/1600/"${deb}"
-    tar=data.tar.xz
-    ar -x "${deb}" "${tar}"
-    PATH=/sw/bin:$PATH tar -C sysroot.ios -xf "${tar}"
-    rm -f "${tar}"
+# the iOS SDK lacks the headers for the ncurses (terminfo) library that iOS ships
+mac=$(xcrun --sdk macosx --show-sdk-path)
+for h in curses.h ncurses_dll.h term.h termcap.h unctrl.h; do
+    cp -a "${mac}/usr/include/${h}" sysroot.ios/usr/include
 done
-
-mv sysroot.ios/usr/lib/_ncurses/* sysroot.ios/usr/lib
-rmdir sysroot.ios/usr/lib/_ncurses
 
 for h in jni.h jni_md.h; do
     ln -s /System/Library/Frameworks/JavaVM.framework/Versions/A/Headers/"${h}" sysroot.ios/usr/include

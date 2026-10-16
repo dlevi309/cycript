@@ -52,8 +52,21 @@ function arch() {
         flags+=(-mthumb)
     fi
 
+    src=$(cd "${lib}" && pwd)
+    if [[ ! -x "${src}/configure" ]]; then
+        # autoconf searches ../ and ../.. for helper scripts, so bootstrap away from our own copies
+        src=$(mktemp -d)
+        cp -R "${lib}/." "${src}"
+        (cd "${src}" && ./autogen.sh)
+    fi
+
+    opts=()
+    if [[ ${lib} == libffi ]]; then
+        opts+=(--disable-docs)
+    fi
+
     cd "${lib}.${arch}"
-    CC="clang -arch ${arch}" CXX="clang++ -arch ${arch}" LDFLAGS="${flags[*]}" CPPFLAGS="${flags[*]} $*" ../"${lib}"/configure --host="${host}" --enable-static --disable-shared \
+    CC="clang -arch ${arch}" CXX="clang++ -arch ${arch}" LDFLAGS="${flags[*]}" CPPFLAGS="${flags[*]} $*" "${src}"/configure --host="${host}" --enable-static --disable-shared "${opts[@]}" \
         ac_cv_func_strcoll_works=yes bash_cv_func_sigsetjmp=present bash_cv_func_ctype_nonascii=no bash_cv_must_reinstall_sighandlers=no bash_cv_func_strcoll_broken=yes bash_cv_wcwidth_broken=no
     make -j5
     cd ..
@@ -83,8 +96,8 @@ function archs() {
 
 archs libffi -DPAGE_MAX_SIZE=16384 -DPAGE_MAX_SHIFT=14 -fno-stack-protector
 archs libuv
-arch64 readline -include sys/ioctl.h
+archs readline -include sys/ioctl.h
 
-for arch in arm64; do
+for arch in $(printf '%s\n' "${archs[@]}" | sort -u); do
     ln -sf . "readline.${arch}/readline"
 done

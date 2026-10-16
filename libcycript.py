@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import os
 import sqlite3
@@ -51,9 +51,9 @@ with sqlite3.connect(dbfile) as sql:
     c.execute("create table module (name text not null, flags int not null, code blob not null, primary key (name))")
 
     for name in [js[0:-3] for js in os.listdir(nodejs) if js.endswith('.js')]:
-        with open(nodejs + '/' + name + '.js', 'r') as file:
+        with open(nodejs + '/' + name + '.js', 'rb') as file:
             code = file.read()
-        c.execute("insert into module (name, flags, code) values (?, ?, ?)", [name, 0, buffer(code)])
+        c.execute("insert into module (name, flags, code) values (?, ?, ?)", [name, 0, code])
 
     many = []
     for key, system in keys.items():
