@@ -64,7 +64,7 @@ function configure() {
     cpf+=" -I../libffi.${arch}/include"
     ldf+=" -L../libffi.${arch}/.libs"
 
-    ../configure "${flags[@]}" --prefix="/usr" "$@" \
+    ../configure "${flags[@]}" --build=x86_64-apple-darwin --prefix="/usr" "$@" \
         --with-libclang="-rpath ${xct} ${xct}/libclang.dylib" \
         CC="${cc} ${flg}" CXX="${cxx} ${flg}" OBJCXX="${cxx} ${flg}" \
         CFLAGS="${ccf[*]}" CXXFLAGS="${ccf[*]}" OBJCXXFLAGS="${ccf[*]} ${obc}" \
