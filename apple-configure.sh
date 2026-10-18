@@ -64,11 +64,11 @@ function configure() {
     cpf+=" -I../libffi.${arch}/include"
     ldf+=" -L../libffi.${arch}/.libs"
 
-    ../configure --enable-maintainer-mode "${flags[@]}" --prefix="/usr" "$@" \
+    ../configure "${flags[@]}" --build=x86_64-apple-darwin --prefix="/usr" "$@" \
         --with-libclang="-rpath ${xct} ${xct}/libclang.dylib" \
         CC="${cc} ${flg}" CXX="${cxx} ${flg}" OBJCXX="${cxx} ${flg}" \
         CFLAGS="${ccf[*]}" CXXFLAGS="${ccf[*]}" OBJCXXFLAGS="${ccf[*]} ${obc}" \
-        CPPFLAGS="${cpf}" LDFLAGS="${ldf}" LTLIBREADLINE="../readline.${arch}/.libs/libreadline.a" CY_SYSTEM="$((1<<system++))"
+        CPPFLAGS="${cpf}" LDFLAGS="${ldf}" LTLIBREADLINE="../readline.${arch}/libreadline.a" CY_SYSTEM="$((1<<system++))"
 
     cd ..
 }
@@ -93,13 +93,13 @@ for arch in arm64 arm64e; do
     cpf+=" -I../extra.${arch}"
     cpf+=" -I../readline.${arch}"
     cpf+=" -I../sysroot.ios/usr/include"
-    ldf+=" -L../readline.${arch}/.libs"
+    ldf+=" -L../readline.${arch}"
 
     ldf+=" -Wl,-dead_strip"
     ldf+=" -Wl,-no_dead_strip_inits_and_terms"
 
     if [[ ${arch} == arm64 ]] || [[ ${arch} == arm64e ]]; then
-        min=7.0
+        min=11.0
     else
         min=2.0
         ldf+=" -Wl,-segalign,4000"

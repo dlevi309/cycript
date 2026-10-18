@@ -30,6 +30,7 @@ AM_CPPFLAGS += -include config.h -include $(srcdir)/unconfig.h
 
 CY_FLAGS = 
 CY_FLAGS += -fvisibility=hidden
+CY_FLAGS += -fno-delete-null-pointer-checks
 
 if CY_ANDROID
 CY_FLAGS += -fPIE
@@ -103,7 +104,7 @@ endif
 
 CLEANFILES += Analyze
 Analyze: Analyze.cpp Error.cpp Output.cpp Replace.cpp Syntax.cpp
-	$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) -std=c++11 $(LDFLAGS_FOR_BUILD) $(CY_LANGFLAGS) -I$(srcdir)/extra -o $@ $^ $(CY_LIBCLANG) -Wno-bitwise-op-parentheses -Wno-dangling-else -Wno-logical-op-parentheses
+	$(CXX_FOR_BUILD) $(CXXFLAGS_FOR_BUILD) -std=c++11 -fno-delete-null-pointer-checks $(LDFLAGS_FOR_BUILD) $(CY_LANGFLAGS) -I$(srcdir)/extra -o $@ $^ $(CY_LIBCLANG) -Wno-bitwise-op-parentheses -Wno-dangling-else -Wno-logical-op-parentheses
 
 CLEANFILES += Bridge.def
 Bridge.def: Analysis.cpp Analyze Bridge.old
